@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Oppgave 1</title>
+    <script>
+      window.onload = oppstart;
+
+      var req;
+
+      function oppstart() {
+        req = new XMLHttpRequest();
+        req.onreadystatechange = sjekkStatus;
+        req.open("GET", "data/presentasjoner.dat", true);
+        req.send();
+      }
+
+      function sjekkStatus() {
+        if (req.readyState == 4 && req.status == 200) {
+          // Lag array der hver indeks består av en linje med data.
+          var hverLinje = req.responseText.split("\n");
+
+          var ut = "Fremtidige presentasjoner: <br />";
+
+          for (var i = 0; i < hverLinje.length; i++) {
+            var data = hverLinje[i].split("%");
+            if (Date.parse(data[2]) > Date.now()) {
+              ut += "<br />" + "<b>" + data[0] + " - " + data[1] + "</b>" + "<br />" + data[2] +
+              "<br />" + "Antall plasser: " + data[3] + "<br />";
+            }
+          }
+          document.getElementById("utskrift").innerHTML = ut;
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="utskrift">
+    </div>
+  </body>
+</html>

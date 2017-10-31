@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Oppgave 2</title>
+    <script>
+      window.onload = oppstart;
+
+      var xmlhttp;
+
+      function oppstart() {
+        document.getElementById("btnRegistrer").onclick = registrer;
+      }
+
+      function registrer() {
+        var input = {
+          id: document.getElementById("inputID").value,
+          navn: document.getElementById("inputNavn").value,
+          epost: document.getElementById("inputEpost").value
+        }
+
+        xmlhttp = new XMLHttpRequest;
+        xmlhttp.onreadystatechange = statusSjekk;
+        xmlhttp.open("GET", "oppgave2.php?kid=" + input.id + "&navn=" + input.navn +
+         "&epost=" + input.epost, true);
+        xmlhttp.send();
+      }
+
+      function statusSjekk() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+          document.getElementById("utskrift").innerHTML = xmlhttp.responseText;
+        }
+      }
+
+    </script>
+  </head>
+
+  <body>
+    KursID:<input type="text" id="inputID" />
+    Navn:<input type="text" id="inputNavn" />
+    E-post:<input type="email" id="inputEpost" />
+    <button type="button" id="btnRegistrer">Meld deg opp</button>
+    <p id="utskrift"></p>
+  </body>
+</html>
