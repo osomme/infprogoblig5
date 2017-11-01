@@ -9,34 +9,62 @@
       var xmlhttp;
 
       function oppstart() {
-        document.getElementById("btnRegistrer").onclick = registrer;
+        request(lesSjekk, "data/presentasjoner.dat"); // Les fra listen av presentasjoner.
+        document.getElementById("btnRegistrer").onclick = skriv; // Skriv til påmeldinger.
       }
 
-      function registrer() {
+      function skriv() {
         var input = {
           id: document.getElementById("inputID").value,
           navn: document.getElementById("inputNavn").value,
           epost: document.getElementById("inputEpost").value
         }
-
-        xmlhttp = new XMLHttpRequest;
-        xmlhttp.onreadystatechange = statusSjekk;
-        xmlhttp.open("GET", "oppgave2.php?kid=" + input.id + "&navn=" + input.navn +
-         "&epost=" + input.epost, true);
-        xmlhttp.send();
+        request(skrivSjekk, "oppgave2.php?kode=" + input.id + "&navn=" + input.navn +
+         "&epost=" + input.epost);
       }
 
-      function statusSjekk() {
+      function lesSjekk() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+          var rader = xmlhttp.responseText.split("\n");
+
+          for (var i = 0; i < rader.length; i++) {
+            var kolonne = rader[i].split("%");
+
+            if (Date.parse(kolonne[2]) > Date.now()) {
+              var skrivUt = kolonne[1] + " " + kolonne[2];
+              lagListe(skrivUt, kolonne[0]);
+            }
+          }
+        }
+      }
+
+      function skrivSjekk() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
           document.getElementById("utskrift").innerHTML = xmlhttp.responseText;
         }
+      }
+
+      function lagListe(kurs, id) {
+        var valg = document.createElement("option");
+        var valgMuligheter = document.createTextNode(kurs);
+        valg.appendChild(valgMuligheter);
+        valg.value = id;
+        document.getElementById("inputID").appendChild(valg);
+      }
+
+      function request(funksjon, fil) {
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = funksjon;
+        xmlhttp.open("GET", fil, true);
+        xmlhttp.send();
       }
 
     </script>
   </head>
 
   <body>
-    KursID:<input type="text" id="inputID" />
+    <select id="inputID">
+    </select>
     Navn:<input type="text" id="inputNavn" />
     E-post:<input type="email" id="inputEpost" />
     <button type="button" id="btnRegistrer">Meld deg opp</button>
